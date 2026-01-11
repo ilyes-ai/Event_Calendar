@@ -1,6 +1,11 @@
 {
-  "name": "SOS Ambassadors",
+  "name": "SOS Ambassadors Tunisia",
   "short_name": "SOS",
+  "description": "SOS Ambassadors Regional Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e30613",
   "icons": [
     {
       "src": "logo.png",
@@ -12,9 +17,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#e30613"
+  ]
 }
