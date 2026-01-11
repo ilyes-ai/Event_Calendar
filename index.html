@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOS Ambassadors – Events Calendar 2026</title>
+    <link rel="icon" type="image/png" href="logo.png">
+</head>
+  <body>
+
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <section id="news-board" class="news-board" >
+  <div class="news-header">
+    <h2>📢 Regional Bureau - To-Do & News</h2>
+    <p>Internal updates & tasks</p>
+  </div>
+
+  <!-- Only Farah sees this -->
+  <div 
+    id="news-editor" class="news-input" style="display:none;">
+    <input
+      type="text"
+      id="news-content"
+      placeholder="Add a new task or announcement...."
+    />
+    <button onclick="updateNews()">➕ Add</button>
+  </div>
+
+  <ul id="news-list" class="news-list"></ul>
+</section>
+<header>
+  <h1>SOS Ambassadors – Events Calendar 2026</h1>
+  <p>Regional Bureau – Sfax</p>
+</header>
+
+<!-- Login Container -->
+<div class="login-container" id="login-container">
+  <div id="username-step">
+    <input type="text" id="username" placeholder="Enter your username" />
+    <button onclick="checkUsername()">Next</button>
+    <div class="error" id="username-error"></div>
+  </div>
+
+  <div id="password-step" style="display:none;">
+    <input type="password" id="password" placeholder="Enter your password" />
+    <button onclick="checkPassword(),afterLogin(document.getElementById('password'))">Login</button>
+    <div class="error" id="password-error"></div>
+  </div>
+</div>
+
+<!-- Club filter (hidden until login) -->
+<div class="filter-container" id="calendar-filters">
+  <label for="club-select">Select Club:</label>
+  <select id="club-select">
+    <option value="">-- All Clubs --</option>
+    <option value="isims">isims</option>
+    <option value="issis">issis</option>
+    <option value="ipsas">ipsas</option>
+    <option value="fss">fss</option>
+    <option value="fsegs">fsegs</option>
+    <option value="ihec">ihec</option>
+    <option value="isgis">isgis</option>
+    <option value="isbs">isbs</option>
+  </select>
+</div>
+<div id="event-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Update Event Status</h3>
+    <p id="modal-event-title"></p>
+
+    <div class="modal-actions">
+      <button id="mark-done" class="btn done">Mark as DONE</button>
+      <button id="mark-not-done" class="btn not-done">Mark as NOT DONE</button>
+      <button id="close-modal" class="btn cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+<!-- Calendar -->
+<div id="calendar"></div>
+
+<!-- Your script -->
+<script src="script.js"></script>
+<style>
+  :root {
+  --bg-main: #f4f6f9;
+  --bg-surface: #ffffff;
+  --bg-soft: #eef2f7;
+
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --text-main: #1f2933;
+  --text-muted: #6b7280;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+
+  --font-main: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: linear-gradient(135deg, var(--bg-soft), var(--bg-main));
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: var(--space-lg) var(--space-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-xs);
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* News Board */
+.news-board {
+  max-width: 1000px;
+  margin: var(--space-lg) auto;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.news-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.news-header p {
+  margin-top: var(--space-xs);
+  color: var(--text-muted);
+}
+
+.news-input {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.news-input input {
+  flex: 1;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+.news-input button {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.news-input button:hover {
+  background: var(--primary-dark);
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-md);
+}
+
+.news-list li {
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  margin-bottom: var(--space-sm);
+}
+
+/* Login */
+.login-container {
+  max-width: 420px;
+  margin: var(--space-lg) auto;
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.login-container input {
+  width: 100%;
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+}
+
+.login-container button {
+  width: 100%;
+  padding: var(--space-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.login-container button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.error {
+  margin-top: var(--space-xs);
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+/* Filters */
+.filter-container {
+  max-width: 1000px;
+  margin: var(--space-md) auto;
+  padding: var(--space-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.filter-container select {
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+/* Calendar */
+#calendar {
+  max-width: 1200px;
+  margin: var(--space-lg) auto;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg-surface);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 420px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.modal h3 {
+  margin-top: 0;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.btn {
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn.done {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn.not-done {
+  background: var(--warning);
+  color: #fff;
+}
+
+.btn.cancel {
+  background: #e5e7eb;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  header h1 {
+    font-size: 2.2rem;
+  }
+
+  .modal-actions {
+    flex-direction: row;
+  }
+
+  .btn {
+    flex: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+</style>
+
+
+</body>
+</html>
