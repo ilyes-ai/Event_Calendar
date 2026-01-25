@@ -120,6 +120,106 @@
 <!-- Your script -->
 <script src="script.js"></script>
 <style>
+  /* Add Event Button */
+#add-event-btn {
+  display: none; /* controlled by JS */
+  margin: 20px auto;
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#add-event-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+#add-event-btn:active {
+  transform: scale(0.98);
+}
+/* Add Event Modal */
+#add-event-modal .modal {
+  width: 95%;
+  max-width: 480px;
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  text-align: left;
+}
+
+/* Inputs inside Add Event */
+#add-event-modal input,
+#add-event-modal select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+#add-event-modal input[type="color"] {
+  height: 44px;
+  padding: 6px;
+}
+
+/* Modal Title */
+#add-event-modal h3 {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+/* Buttons */
+#add-event-modal .modal-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+#save-event {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+#save-event:hover {
+  background: var(--primary-dark);
+}
+
+#cancel-event {
+  background: #e5e7eb;
+  color: var(--text-main);
+}
+@media (max-width: 640px) {
+  .news-board {
+    margin: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  #calendar {
+    padding: var(--space-sm);
+  }
+
+  .filter-container {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  header p {
+    font-size: 0.95rem;
+  }
+}
+
   :root {
   --bg-main: #f4f6f9;
   --bg-surface: #ffffff;
@@ -390,6 +490,7 @@ header p {
 
 </body>
 </html>
+
 
 
 
