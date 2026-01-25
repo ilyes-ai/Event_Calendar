@@ -9,35 +9,7 @@
 
 </head>
   <body>
-    <!-- Add Event Button (Admins only) -->
-<button id="add-event-btn" style="display:none; margin:15px;">
-  ➕ Add Event
-</button>
 
-<!-- Add Event Modal -->
-<div id="add-event-modal" style="display:none;" class="modal-overlay">
-  <div class="modal">
-    <h3>Add New Event</h3>
-
-    <input id="event-title" placeholder="Event title" />
-
-    <select id="event-club">
-      <option value="">Select club</option>
-    </select>
-
-    <input id="new-club" placeholder="New club code (optional)" />
-
-    <input id="event-color" type="color" />
-
-    <input id="event-start" type="date" />
-    <input id="event-end" type="date" />
-
-    <div class="modal-actions">
-      <button id="save-event">Save</button>
-      <button id="cancel-event">Cancel</button>
-    </div>
-  </div>
-</div>
 
 
   <!-- FullCalendar JS -->
@@ -99,6 +71,35 @@
     <option value="isbs">isbs</option>
     <option value="ilyes">ilyes</option>
   </select>
+</div>
+        <!-- Add Event Button (Admins only) -->
+<button id="add-event-btn" style="display:none; margin:15px;">
+  ➕ Add Event
+</button>
+
+<!-- Add Event Modal -->
+<div id="add-event-modal" style="display:none;" class="modal-overlay">
+  <div class="modal">
+    <h3>Add New Event</h3>
+
+    <input id="event-title" placeholder="Event title" />
+
+    <select id="event-club">
+      <option value="">Select club</option>
+    </select>
+
+    <input id="new-club" placeholder="New club code (optional)" />
+
+    <input id="event-color" type="color" />
+
+    <input id="event-start" type="date" />
+    <input id="event-end" type="date" />
+
+    <div class="modal-actions">
+      <button id="save-event">Save</button>
+      <button id="cancel-event">Cancel</button>
+    </div>
+  </div>
 </div>
 <div id="event-modal" class="modal-overlay">
   <div class="modal">
@@ -389,6 +390,7 @@ header p {
 
 </body>
 </html>
+
 
 
 
