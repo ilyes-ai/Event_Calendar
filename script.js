@@ -76,6 +76,8 @@ function checkPassword() {
   document.getElementById("calendar").style.display = "block";
 
   initializeCalendar();
+  enableAddEventIfAllowed();
+
 }
 
 // ------------------ MODAL LOGIC ------------------
@@ -287,6 +289,128 @@ console.log("RAW RESPONSE:", text);
   input.value = "";
   loadNews();
 }
+// ------------------ ADD EVENT LOGIC ------------------
+
+const ADD_EVENT_ADMINS = ["farah", "ilyes"];
+
+const addEventBtn = document.getElementById("add-event-btn");
+const addEventModal = document.getElementById("add-event-modal");
+
+const clubSelect = document.getElementById("event-club");
+const newClubInput = document.getElementById("new-club");
+const colorInput = document.getElementById("event-color");
+
+const titleInput = document.getElementById("event-title");
+const startInput = document.getElementById("event-start");
+const endInput = document.getElementById("event-end");
+
+// Show button only for admins
+function enableAddEventIfAllowed() {
+  if (ADD_EVENT_ADMINS.includes(currentUser.username)) {
+    addEventBtn.style.display = "inline-block";
+  }
+}
+
+// Open modal
+addEventBtn.onclick = async () => {
+  addEventModal.style.display = "flex";
+  await loadClubCodes();
+};
+
+// Close modal
+document.getElementById("cancel-event").onclick = () => {
+  addEventModal.style.display = "none";
+  clearEventForm();
+};
+
+// Load club codes from DB
+async function loadClubCodes() {
+  const { data, error } = await client
+    .from("events")
+    .select("club_code,color");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const clubs = {};
+  data.forEach(ev => {
+    if (!clubs[ev.club_code]) {
+      clubs[ev.club_code] = ev.color;
+    }
+  });
+
+  clubSelect.innerHTML = `<option value="">Select club</option>`;
+  Object.keys(clubs).forEach(code => {
+    const opt = document.createElement("option");
+    opt.value = code;
+    opt.textContent = code.toUpperCase();
+    opt.dataset.color = clubs[code];
+    clubSelect.appendChild(opt);
+  });
+}
+
+// When selecting existing club → auto color
+clubSelect.onchange = () => {
+  const selected = clubSelect.options[clubSelect.selectedIndex];
+  const color = selected.dataset.color;
+
+  if (color) {
+    colorInput.value = color;
+    newClubInput.value = "";
+    newClubInput.disabled = true;
+  } else {
+    newClubInput.disabled = false;
+  }
+};
+
+// Save event
+document.getElementById("save-event").onclick = async () => {
+  const title = titleInput.value.trim();
+  const clubCode =
+    newClubInput.value.trim() || clubSelect.value;
+
+  const color = colorInput.value;
+  const startDate = startInput.value;
+  const endDate = endInput.value || startDate;
+
+  if (!title || !clubCode || !startDate || !color) {
+    alert("Fill all required fields.");
+    return;
+  }
+
+  const { error } = await client.from("events").insert({
+    title,
+    club_code: clubCode,
+    start_date: startDate,
+    end_date: endDate,
+    color
+  });
+
+  if (error) {
+    console.error(error);
+    alert("Failed to add event");
+    return;
+  }
+
+  addEventModal.style.display = "none";
+  clearEventForm();
+  location.reload(); // reload calendar cleanly
+};
+
+// Reset form
+function clearEventForm() {
+  titleInput.value = "";
+  clubSelect.value = "";
+  newClubInput.value = "";
+  newClubInput.disabled = false;
+  startInput.value = "";
+  endInput.value = "";
+  colorInput.value = "#2563eb";
+}
+
+
 
 
 
